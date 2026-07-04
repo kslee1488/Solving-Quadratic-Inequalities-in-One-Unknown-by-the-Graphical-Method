@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solving Quadratic Inequalities Graphically</title>
+    
+    <!-- KaTeX CSS and Scripts for LaTeX Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles for range sliders */
@@ -31,12 +37,8 @@
         input[type=range]:focus {
             outline: none;
         }
-        .math-text {
-            font-family: 'Times New Roman', Times, serif;
-            font-style: italic;
-        }
         canvas {
-            touch-action: none; /* Prevent scrolling when interacting with canvas area if we add touch later */
+            touch-action: none;
         }
     </style>
 </head>
@@ -68,24 +70,21 @@
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                     <h2 class="text-lg font-semibold mb-4 text-slate-700 border-b pb-2">Configure Inequality</h2>
                     
-                    <div class="flex items-center justify-center space-x-2 text-xl mb-6 bg-slate-100 p-4 rounded-lg overflow-x-auto">
-                        <span class="math-text font-bold text-blue-600" id="display-a">1</span><span class="math-text">x²</span>
-                        <span class="math-text font-bold text-blue-600" id="display-b">+ 0</span><span class="math-text">x</span>
-                        <span class="math-text font-bold text-blue-600" id="display-c">- 4</span>
-                        
-                        <select id="inequality-sign" class="mx-2 p-1 text-lg font-bold border-2 border-slate-300 rounded focus:border-blue-500 focus:ring-0 bg-white cursor-pointer">
+                    <div class="flex items-center justify-center text-xl mb-6 bg-slate-100 p-4 rounded-lg overflow-x-auto min-h-[80px]">
+                        <div id="main-equation-left" class="text-blue-600 font-bold mr-3 text-2xl"></div>
+                        <select id="inequality-sign" class="p-1 text-lg font-bold border-2 border-slate-300 rounded focus:border-blue-500 focus:ring-0 bg-white cursor-pointer">
                             <option value=">">&gt;</option>
                             <option value=">=">&ge;</option>
                             <option value="<">&lt;</option>
                             <option value="<=">&le;</option>
                         </select>
-                        <span class="math-text font-bold">0</span>
+                        <div class="font-bold ml-3 text-2xl">\(0\)</div>
                     </div>
 
                     <div class="space-y-5">
                         <div>
                             <div class="flex justify-between mb-1">
-                                <label for="slider-a" class="text-sm font-medium text-slate-700">Coefficient <span class="math-text">a</span> (concavity)</label>
+                                <label for="slider-a" class="text-sm font-medium text-slate-700">Coefficient \(a\) (concavity)</label>
                                 <span id="val-a" class="text-sm font-mono bg-slate-100 px-2 py-0.5 rounded">1.0</span>
                             </div>
                             <input type="range" id="slider-a" min="-5" max="5" step="0.1" value="1">
@@ -94,7 +93,7 @@
 
                         <div>
                             <div class="flex justify-between mb-1">
-                                <label for="slider-b" class="text-sm font-medium text-slate-700">Coefficient <span class="math-text">b</span></label>
+                                <label for="slider-b" class="text-sm font-medium text-slate-700">Coefficient \(b\)</label>
                                 <span id="val-b" class="text-sm font-mono bg-slate-100 px-2 py-0.5 rounded">0.0</span>
                             </div>
                             <input type="range" id="slider-b" min="-10" max="10" step="0.5" value="0">
@@ -102,7 +101,7 @@
 
                         <div>
                             <div class="flex justify-between mb-1">
-                                <label for="slider-c" class="text-sm font-medium text-slate-700">Coefficient <span class="math-text">c</span> (y-intercept)</label>
+                                <label for="slider-c" class="text-sm font-medium text-slate-700">Coefficient \(c\) (y-intercept)</label>
                                 <span id="val-c" class="text-sm font-mono bg-slate-100 px-2 py-0.5 rounded">-4.0</span>
                             </div>
                             <input type="range" id="slider-c" min="-10" max="10" step="0.5" value="-4">
@@ -145,19 +144,19 @@
                     <span id="quiz-active-mode-desc"></span>
                 </div>
 
-                <!-- Quiz Question Container (Moved from Overlay) -->
+                <!-- Quiz Question Container -->
                 <div id="quiz-question-container" class="w-full bg-white border border-slate-200 shadow-sm rounded-xl p-6 text-center">
                     <h3 class="text-xl font-bold text-slate-800 mb-2">Question <span id="quiz-q-num">1</span></h3>
                     <p class="text-slate-600 mb-6">Choose the correct region for:</p>
-                    <div class="text-2xl mb-8 bg-slate-100 py-3 rounded-lg border border-slate-200">
-                        <span class="math-text font-bold text-indigo-600" id="quiz-eq"></span>
+                    <div class="text-2xl mb-8 bg-slate-100 py-4 rounded-lg border border-slate-200 min-h-[80px] flex items-center justify-center">
+                        <div class="font-bold text-indigo-600" id="quiz-eq"></div>
                     </div>
                     <div id="quiz-options" class="space-y-3">
                         <!-- Options injected here -->
                     </div>
                 </div>
                 
-                <!-- Quiz Result Container (Moved from Overlay) -->
+                <!-- Quiz Result Container -->
                 <div id="quiz-result-container" class="w-full bg-white border border-slate-200 shadow-sm rounded-xl p-6 text-center hidden">
                     <h3 id="quiz-feedback-title" class="text-2xl font-bold mb-2"></h3>
                     <p id="quiz-feedback-text" class="text-slate-600 mb-6"></p>
@@ -172,18 +171,18 @@
         <div class="flex flex-col min-h-[500px]">
             <div class="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex-grow relative h-full">
                 <!-- Legend -->
-                <div class="absolute top-4 left-4 bg-white/90 backdrop-blur border border-slate-200 p-3 rounded-lg shadow-sm text-xs space-y-2 z-10 pointer-events-none">
+                <div class="absolute top-4 left-4 bg-white/90 backdrop-blur border border-slate-200 p-3 rounded-lg shadow-sm text-xs space-y-2 z-10 pointer-events-none" id="graph-legend">
                     <div class="flex items-center gap-2">
                         <div class="w-4 h-0.5 bg-blue-300"></div>
-                        <span>Graph of <span class="math-text">y = f(x)</span></span>
+                        <span>Graph of \(y = f(x)\)</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="w-4 h-1 bg-emerald-500"></div>
-                        <span>Valid Region (<span class="math-text">y</span> matches sign)</span>
+                        <span>Valid Region (\(y\) matches sign)</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="w-4 h-1.5 bg-emerald-500/30"></div>
-                        <span>Solution Set (on x-axis)</span>
+                        <span>Solution Set (on \(x\)-axis)</span>
                     </div>
                 </div>
 
@@ -212,9 +211,7 @@
             valA: document.getElementById('val-a'),
             valB: document.getElementById('val-b'),
             valC: document.getElementById('val-c'),
-            dispA: document.getElementById('display-a'),
-            dispB: document.getElementById('display-b'),
-            dispC: document.getElementById('display-c'),
+            dispEqLeft: document.getElementById('main-equation-left'),
             sign: document.getElementById('inequality-sign'),
             explanation: document.getElementById('explanation-content'),
             canvas: document.getElementById('graphCanvas'),
@@ -228,6 +225,19 @@
         let originX = 0;
         let originY = 0;
         
+        // --- MathJax/KaTeX Helper ---
+        function renderMath(element) {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(element, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '\\(', right: '\\)', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
         // --- Initialization ---
         function init() {
             // Attach event listeners
@@ -242,11 +252,11 @@
             window.addEventListener('resize', handleResize);
             
             // Initial setup
+            renderMath(document.body); // Initial pass for static elements
             handleResize();
         }
 
         function handleResize() {
-            // Set actual canvas resolution to match display size to prevent blurring
             const rect = els.container.getBoundingClientRect();
             els.canvas.width = rect.width;
             els.canvas.height = rect.height;
@@ -259,39 +269,50 @@
 
         // --- State Management ---
         function updateState(key, value) {
-            // Prevent exactly 0 for 'a' to keep it strictly quadratic visually and logically
             if (key === 'a' && Math.abs(value) < 0.05) {
                 value = value < 0 ? -0.1 : 0.1;
                 els.sliderA.value = value;
             }
             
             state[key] = value;
-            
-            // Update UI displays
             els[`val${key.toUpperCase()}`].textContent = value.toFixed(1);
             
-            // Update Equation Header Formatting
             formatEquationHeader();
-            
             render();
         }
 
+        function getLatexEq(a, b, c) {
+            let str = '';
+            
+            if (a === 1) str += 'x^2';
+            else if (a === -1) str += '-x^2';
+            else str += a + 'x^2';
+            
+            if (b !== 0) {
+                if (b === 1) str += ' + x';
+                else if (b === -1) str += ' - x';
+                else if (b > 0) str += ' + ' + b + 'x';
+                else str += ' - ' + Math.abs(b) + 'x';
+            }
+            
+            if (c !== 0) {
+                if (c > 0) str += ' + ' + c;
+                else str += ' - ' + Math.abs(c);
+            }
+            return str;
+        }
+
+        function getLatexSign(sign) {
+            if (sign === '>=') return '\\ge';
+            if (sign === '<=') return '\\le';
+            if (sign === '<') return '\\lt'; // Use \lt and \gt to prevent HTML parsing bugs
+            if (sign === '>') return '\\gt';
+            return sign;
+        }
+
         function formatEquationHeader() {
-            els.dispA.textContent = (state.a === 1 ? "" : state.a === -1 ? "-" : state.a);
-            
-            if (state.b === 0) {
-                els.dispB.textContent = "";
-                els.dispB.nextElementSibling.style.display = 'none'; // hide 'x'
-            } else {
-                els.dispB.nextElementSibling.style.display = 'inline';
-                els.dispB.textContent = (state.b > 0 ? " + " : " - ") + Math.abs(state.b);
-            }
-            
-            if (state.c === 0) {
-                els.dispC.textContent = "";
-            } else {
-                els.dispC.textContent = (state.c > 0 ? " + " : " - ") + Math.abs(state.c);
-            }
+            els.dispEqLeft.textContent = '\\(' + getLatexEq(state.a, state.b, state.c) + '\\)';
+            renderMath(els.dispEqLeft);
         }
 
         // --- Math Helpers ---
@@ -307,16 +328,24 @@
                 case '<=': return y <= 0;
             }
         }
+        
+        function checkIneqDirect(y, sign) {
+            switch (sign) {
+                case '>': return y > 0;
+                case '>=': return y >= 0;
+                case '<': return y < 0;
+                case '<=': return y <= 0;
+            }
+        }
 
         function getRoots() {
-            if (state.a === 0) return []; // Should be prevented, but fallback
-            
+            if (state.a === 0) return [];
             const discriminant = state.b * state.b - 4 * state.a * state.c;
             
             if (discriminant < 0) {
-                return []; // No real roots
+                return []; 
             } else if (Math.abs(discriminant) < 0.001) {
-                return [-state.b / (2 * state.a)]; // One repeated root
+                return [-state.b / (2 * state.a)]; 
             } else {
                 const root1 = (-state.b - Math.sqrt(discriminant)) / (2 * state.a);
                 const root2 = (-state.b + Math.sqrt(discriminant)) / (2 * state.a);
@@ -340,7 +369,6 @@
             drawGrid();
             drawAxes();
             
-            // Do not draw parabola while waiting for user to answer
             if (quiz.active && quiz.waitingForAnswer) {
                 return;
             }
@@ -364,20 +392,18 @@
         }
 
         function drawGrid() {
-            ctx.strokeStyle = '#f1f5f9'; // slate-100
+            ctx.strokeStyle = '#f1f5f9'; 
             ctx.lineWidth = 1;
             
             const step = getGridStep();
             const pxStep = step * scale;
             
-            // Vertical lines (expand outwards from origin)
             for (let x = originX; x < els.canvas.width; x += pxStep) {
                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, els.canvas.height); ctx.stroke();
             }
             for (let x = originX; x > 0; x -= pxStep) {
                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, els.canvas.height); ctx.stroke();
             }
-            // Horizontal lines (expand outwards from origin)
             for (let y = originY; y < els.canvas.height; y += pxStep) {
                 ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(els.canvas.width, y); ctx.stroke();
             }
@@ -387,30 +413,19 @@
         }
 
         function drawAxes() {
-            ctx.strokeStyle = '#94a3b8'; // slate-400
+            ctx.strokeStyle = '#94a3b8'; 
             ctx.lineWidth = 2;
             
-            // X axis
-            ctx.beginPath();
-            ctx.moveTo(0, originY);
-            ctx.lineTo(els.canvas.width, originY);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(els.canvas.width, originY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, els.canvas.height); ctx.stroke();
             
-            // Y axis
-            ctx.beginPath();
-            ctx.moveTo(originX, 0);
-            ctx.lineTo(originX, els.canvas.height);
-            ctx.stroke();
-            
-            // Axis labels/ticks
-            ctx.fillStyle = '#64748b'; // slate-500
+            ctx.fillStyle = '#64748b'; 
             ctx.font = 'bold 16px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             
             const step = getGridStep();
             
-            // X ticks (dynamic limit based on current scale)
             let limitX = Math.ceil((els.canvas.width / 2) / scale);
             for (let x = -limitX; x <= limitX; x += step) {
                 if (x === 0) continue;
@@ -421,7 +436,6 @@
                 }
             }
             
-            // Y ticks (dynamic limit based on current scale)
             ctx.textAlign = 'right';
             ctx.textBaseline = 'middle';
             let limitY = Math.ceil((els.canvas.height / 2) / scale);
@@ -436,8 +450,7 @@
         }
 
         function drawParabola() {
-            // 1. Draw full faint parabola
-            ctx.strokeStyle = '#93c5fd'; // blue-300
+            ctx.strokeStyle = '#93c5fd'; 
             ctx.lineWidth = 2;
             ctx.beginPath();
             
@@ -451,8 +464,7 @@
             }
             ctx.stroke();
 
-            // 2. Draw highlighted regions
-            ctx.strokeStyle = '#10b981'; // emerald-500
+            ctx.strokeStyle = '#10b981'; 
             ctx.lineWidth = 4;
             
             let isDrawing = false;
@@ -481,14 +493,12 @@
         }
 
         function highlightSolution(roots) {
-            // Highlight the corresponding intervals directly on the X-axis
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.2)'; // semi-transparent emerald
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.2)'; 
             
             const startGx = pToGx(0);
             const endGx = pToGx(els.canvas.width);
             const step = 0.05;
             
-            // Iterate over small x intervals and draw rectangles if the midpoint satisfies inequality
             for (let x = startGx; x < endGx; x += step) {
                 let midX = x + step / 2;
                 let y = evaluateQuadratic(midX);
@@ -496,13 +506,11 @@
                 if (checkInequality(y)) {
                     let px = gToPx(x);
                     let pWidth = step * scale;
-                    // Draw highlight block on x-axis
                     ctx.fillRect(px, originY - 15, pWidth + 1, 30);
                     
-                    // Draw thick colored line exactly on the axis
                     ctx.fillStyle = '#10b981';
                     ctx.fillRect(px, originY - 2, pWidth + 1, 4);
-                    ctx.fillStyle = 'rgba(16, 185, 129, 0.2)'; // reset for background block
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
                 }
             }
         }
@@ -512,19 +520,19 @@
             
             roots.forEach(rootX => {
                 const px = gToPx(rootX);
-                const py = gToPy(0); // roots are always on the x-axis
+                const py = gToPy(0); 
                 
                 ctx.beginPath();
                 ctx.arc(px, py, 6, 0, 2 * Math.PI);
                 
                 if (strict) {
-                    ctx.fillStyle = '#ffffff'; // White inside
+                    ctx.fillStyle = '#ffffff'; 
                     ctx.fill();
-                    ctx.strokeStyle = '#059669'; // Emerald border
+                    ctx.strokeStyle = '#059669'; 
                     ctx.lineWidth = 2;
                     ctx.stroke();
                 } else {
-                    ctx.fillStyle = '#059669'; // Solid emerald
+                    ctx.fillStyle = '#059669'; 
                     ctx.fill();
                 }
             });
@@ -533,86 +541,66 @@
         // --- Explanation Generator ---
         function updateExplanation(roots) {
             const container = els.explanation;
-            container.innerHTML = ''; // Clear
+            container.innerHTML = ''; 
             
-            const f_x = `<span class="math-text text-blue-600 font-semibold">y</span>`;
+            const eqStr = getLatexEq(state.a, state.b, state.c);
+            const signStr = getLatexSign(state.sign);
             const discriminant = state.b * state.b - 4 * state.a * state.c;
             
-            // 1. Establish the function
-            addStep(`<b>Step 1: Treat as a function.</b> Let ${f_x} = ${formatEqText(state.a, state.b, state.c)}. We want to find where ${f_x} ${state.sign} 0.`);
+            addStep(`<b>Step 1: Treat as a function.</b> Let \\(y = ${eqStr}\\). We want to find where \\(y ${signStr} 0\\).`);
             
-            // 2. Parabola shape
-            const shape = state.a > 0 ? "upwards ∪" : "downwards ∩";
-            addStep(`<b>Step 2: Shape of graph.</b> Since <span class="math-text">a</span> = ${state.a} (${state.a > 0 ? '> 0' : '< 0'}), the parabola opens <b>${shape}</b>.`);
+            const shape = state.a > 0 ? "upwards (∪)" : "downwards (∩)";
+            addStep(`<b>Step 2: Shape of graph.</b> Since \\(a = ${state.a}\\) (\\(a ${state.a > 0 ? '\\gt' : '\\lt'} 0\\)), the parabola opens <b>${shape}</b>.`);
             
-            // 3. Roots
             let rootText = '';
             if (roots.length === 0) {
-                rootText = `The discriminant (<span class="math-text">b² - 4ac</span> = ${discriminant.toFixed(2)}) is negative. The graph <b>never crosses the x-axis</b>.`;
+                rootText = `The discriminant (\\(\\Delta = b^2 - 4ac = ${discriminant.toFixed(2)}\\)) is negative. The graph <b>never crosses the \\(x\\)-axis</b>.`;
             } else if (roots.length === 1) {
-                rootText = `The discriminant is zero. The graph touches the x-axis at exactly one point: <span class="math-text font-bold text-slate-800">x = ${roots[0].toFixed(2)}</span>.`;
+                rootText = `The discriminant is zero. The graph touches the \\(x\\)-axis at exactly one point: \\(x = ${roots[0].toFixed(2)}\\).`;
             } else {
-                rootText = `Find the x-intercepts (roots) where ${f_x} = 0. Solving yields two points: <span class="math-text font-bold text-slate-800">x₁ = ${roots[0].toFixed(2)}</span> and <span class="math-text font-bold text-slate-800">x₂ = ${roots[1].toFixed(2)}</span>.`;
+                rootText = `Find the \\(x\\)-intercepts (roots) where \\(y = 0\\). Solving yields two points: \\(x_1 = ${roots[0].toFixed(2)}\\) and \\(x_2 = ${roots[1].toFixed(2)}\\).`;
             }
-            addStep(`<b>Step 3: X-intercepts.</b> ${rootText}`);
+            addStep(`<b>Step 3: Intercepts.</b> ${rootText}`);
             
-            // 4. Graphical interpretation & Final Solution
-            let relationStr = '';
-            let validConditionStr = '';
-            
-            if (state.sign.includes('>')) {
-                relationStr = `<b>above</b> the x-axis`;
-                validConditionStr = 'is positive';
-            } else {
-                relationStr = `<b>below</b> the x-axis`;
-                validConditionStr = 'is negative';
-            }
-            
-            if (state.sign.includes('=')) {
-                relationStr += ` (or touching it)`;
-            }
+            let relationStr = state.sign.includes('>') ? `<b>above</b> the \\(x\\)-axis` : `<b>below</b> the \\(x\\)-axis`;
+            if (state.sign.includes('=')) relationStr += ` (or touching it)`;
 
             let solutionText = "";
 
             if (roots.length === 2) {
-                // Two roots
                 const r1 = roots[0].toFixed(2);
                 const r2 = roots[1].toFixed(2);
-                const isPositiveSides = state.a > 0; // if opens up, ends are positive
-                
+                const isPositiveSides = state.a > 0; 
                 const lookingForPositive = state.sign.includes('>');
                 
+                const s1 = isStrict() ? '\\lt' : '\\le';
+                const s2 = isStrict() ? '\\gt' : '\\ge';
+
                 if (isPositiveSides === lookingForPositive) {
-                    // Outer intervals
-                    solutionText = `The solution consists of the outer intervals: 
-                    <br><span class="math-text font-bold text-emerald-600 text-lg">x ${isStrict() ? '<' : '≤'} ${r1}  &nbsp;OR&nbsp;  x ${isStrict() ? '>' : '≥'} ${r2}</span>`;
+                    solutionText = `The solution consists of the outer intervals: <br><span class="font-bold text-emerald-600 text-lg">\\(x ${s1} ${r1} \\text{ or } x ${s2} ${r2}\\)</span>`;
                 } else {
-                    // Inner interval
-                    solutionText = `The solution is the bounded region between the roots: 
-                    <br><span class="math-text font-bold text-emerald-600 text-lg">${r1} ${isStrict() ? '<' : '≤'} x ${isStrict() ? '<' : '≤'} ${r2}</span>`;
+                    solutionText = `The solution is the bounded region between the roots: <br><span class="font-bold text-emerald-600 text-lg">\\(${r1} ${s1} x ${s1} ${r2}\\)</span>`;
                 }
             } else if (roots.length === 1) {
-                // One root
                 const r = roots[0].toFixed(2);
                 if (state.a > 0) {
-                    if (state.sign === '>') solutionText = `<span class="math-text font-bold text-emerald-600 text-lg">All real numbers except x = ${r}</span>`;
-                    else if (state.sign === '>=') solutionText = `<span class="math-text font-bold text-emerald-600 text-lg">All real numbers</span>`;
-                    else if (state.sign === '<') solutionText = `<span class="math-text font-bold text-red-600 text-lg">No solution</span>`;
-                    else if (state.sign === '<=') solutionText = `<span class="math-text font-bold text-emerald-600 text-lg">x = ${r}</span>`;
+                    if (state.sign === '>') solutionText = `<span class="font-bold text-emerald-600 text-lg">\\(\\text{All real numbers except } x = ${r}\\)</span>`;
+                    else if (state.sign === '>=') solutionText = `<span class="font-bold text-emerald-600 text-lg">\\(\\text{All real numbers}\\)</span>`;
+                    else if (state.sign === '<') solutionText = `<span class="font-bold text-red-600 text-lg">\\(\\text{No solution}\\)</span>`;
+                    else if (state.sign === '<=') solutionText = `<span class="font-bold text-emerald-600 text-lg">\\(x = ${r}\\)</span>`;
                 } else {
-                    if (state.sign === '<') solutionText = `<span class="math-text font-bold text-emerald-600 text-lg">All real numbers except x = ${r}</span>`;
-                    else if (state.sign === '<=') solutionText = `<span class="math-text font-bold text-emerald-600 text-lg">All real numbers</span>`;
-                    else if (state.sign === '>') solutionText = `<span class="math-text font-bold text-red-600 text-lg">No solution</span>`;
-                    else if (state.sign === '>=') solutionText = `<span class="math-text font-bold text-emerald-600 text-lg">x = ${r}</span>`;
+                    if (state.sign === '<') solutionText = `<span class="font-bold text-emerald-600 text-lg">\\(\\text{All real numbers except } x = ${r}\\)</span>`;
+                    else if (state.sign === '<=') solutionText = `<span class="font-bold text-emerald-600 text-lg">\\(\\text{All real numbers}\\)</span>`;
+                    else if (state.sign === '>') solutionText = `<span class="font-bold text-red-600 text-lg">\\(\\text{No solution}\\)</span>`;
+                    else if (state.sign === '>=') solutionText = `<span class="font-bold text-emerald-600 text-lg">\\(x = ${r}\\)</span>`;
                 }
             } else {
-                // No roots
-                if (state.a > 0) { // Entirely above x-axis
-                    if (state.sign.includes('>')) solutionText = `<span class="math-text font-bold text-emerald-600 text-lg">All real numbers</span>`;
-                    else solutionText = `<span class="math-text font-bold text-red-600 text-lg">No solution</span>`;
-                } else { // Entirely below x-axis
-                    if (state.sign.includes('<')) solutionText = `<span class="math-text font-bold text-emerald-600 text-lg">All real numbers</span>`;
-                    else solutionText = `<span class="math-text font-bold text-red-600 text-lg">No solution</span>`;
+                if (state.a > 0) { 
+                    if (state.sign.includes('>')) solutionText = `<span class="font-bold text-emerald-600 text-lg">\\(\\text{All real numbers}\\)</span>`;
+                    else solutionText = `<span class="font-bold text-red-600 text-lg">\\(\\text{No solution}\\)</span>`;
+                } else { 
+                    if (state.sign.includes('<')) solutionText = `<span class="font-bold text-emerald-600 text-lg">\\(\\text{All real numbers}\\)</span>`;
+                    else solutionText = `<span class="font-bold text-red-600 text-lg">\\(\\text{No solution}\\)</span>`;
                 }
             }
 
@@ -624,14 +612,8 @@
                 p.innerHTML = html;
                 container.appendChild(p);
             }
-        }
-        
-        function formatEqText(a, b, c) {
-            let str = '';
-            str += (a === 1 ? "" : a === -1 ? "-" : a) + "x² ";
-            if (b !== 0) str += (b > 0 ? "+ " : "- ") + Math.abs(b) + "x ";
-            if (c !== 0) str += (c > 0 ? "+ " : "- ") + Math.abs(c);
-            return `<span class="math-text">${str.trim()}</span>`;
+
+            renderMath(container);
         }
 
         // --- Quiz Logic ---
@@ -645,8 +627,8 @@
             score: 0,
             total: 0,
             questionCount: 0,
-            q: null, // Current question data
-            autoNextTimeout: null // For 3s auto-advance
+            q: null,
+            autoNextTimeout: null 
         };
 
         let pendingMode = null;
@@ -675,33 +657,30 @@
                 viewSetup.classList.add('hidden');
                 viewAct.classList.add('hidden');
                 
-                scale = 40; // Reset scale for explorer mode
+                scale = 40; 
                 
                 if (quiz.active) endQuizInternal();
-                else render(); // force render to update scale
+                else render(); 
             } else {
                 viewExp.classList.add('hidden');
                 
                 const qMode = mode === 'quiz1' ? 1 : 2;
                 
                 if (quiz.active && quiz.mode === qMode) {
-                    return; // Already playing this mode
+                    return; 
                 }
                 
-                // End current quiz visually if switching between mode 1 and 2
                 if (quiz.active) {
                     endQuizInternal();
                 }
 
                 if (!quiz.name) {
-                    // Ask for name first
                     pendingMode = qMode;
                     document.getElementById('pending-mode-name').textContent = `Quiz Mode ${qMode}`;
                     viewSetup.classList.remove('hidden');
                     viewAct.classList.add('hidden');
                     document.getElementById('quiz-name').focus();
                 } else {
-                    // Already have name, start instantly
                     viewSetup.classList.add('hidden');
                     startQuiz(qMode, quiz.name);
                 }
@@ -716,7 +695,6 @@
             }
             document.getElementById('quiz-name-error').classList.add('hidden');
             
-            // Start the quiz
             document.getElementById('view-quiz-setup').classList.add('hidden');
             startQuiz(pendingMode, nameInput);
         }
@@ -734,13 +712,14 @@
             document.getElementById('display-player').textContent = quiz.name;
             
             document.getElementById('quiz-active-mode-desc').innerHTML = mode === 1 
-                ? "<b>Mode 1 (Normal):</b> Inequalities always have exactly 2 distinct x-intercepts." 
-                : "<b>Mode 2 (Challenging):</b> A mix of inequalities including those with 0, 1, or 2 x-intercepts.";
+                ? "<b>Mode 1 (Normal):</b> Inequalities always have exactly 2 distinct \\(x\\)-intercepts." 
+                : "<b>Mode 2 (Challenging):</b> A mix of inequalities including those with 0, 1, or 2 \\(x\\)-intercepts.";
                 
+            renderMath(document.getElementById('quiz-active-mode-desc'));
+
             updateScoreDisplay();
-            saveScoreToSheet(); // Create initial row in Sheets
+            saveScoreToSheet(); 
             
-            // Disable manual controls to prevent cheating
             els.sliderA.disabled = true;
             els.sliderB.disabled = true;
             els.sliderC.disabled = true;
@@ -761,40 +740,19 @@
                 quiz.autoNextTimeout = null;
             }
             
-            // Re-enable controls
             els.sliderA.disabled = false;
             els.sliderB.disabled = false;
             els.sliderC.disabled = false;
             els.sign.disabled = false;
             
-            scale = 40; // Reset scale when exiting quiz
+            scale = 40; 
             
-            // Sync graph with UI states if it was left showing a quiz result
             state.a = parseFloat(els.sliderA.value);
             state.b = parseFloat(els.sliderB.value);
             state.c = parseFloat(els.sliderC.value);
             state.sign = els.sign.value;
             formatEquationHeader();
             render();
-        }
-
-        function formatQuizEqText(a, b, c, sign) {
-            let str = '';
-            str += (a === 1 ? "" : a === -1 ? "-" : a) + "x² ";
-            if (b !== 0) str += (b > 0 ? "+ " : "- ") + Math.abs(b) + "x ";
-            if (c !== 0) str += (c > 0 ? "+ " : "- ") + Math.abs(c);
-            let signSymbol = sign === '>=' ? '≥' : sign === '<=' ? '≤' : sign;
-            str += ` ${signSymbol} 0`;
-            return str.trim();
-        }
-
-        function checkIneqDirect(y, sign) {
-            switch (sign) {
-                case '>': return y > 0;
-                case '>=': return y >= 0;
-                case '<': return y < 0;
-                case '<=': return y <= 0;
-            }
         }
 
         function nextQuizQuestion() {
@@ -810,10 +768,10 @@
             document.getElementById('quiz-question-container').classList.remove('hidden');
             document.getElementById('quiz-result-container').classList.add('hidden');
             
-            scale = 40; // Reset scale for the blank grid view
+            scale = 40; 
             
             generateQuestion(quiz.mode);
-            render(); // Clear canvas for next question
+            render(); 
         }
 
         function generateQuestion(mode) {
@@ -822,10 +780,9 @@
             let sign = signs[Math.floor(Math.random() * signs.length)];
             
             if (mode === 1) {
-                // Mode 1: Always 2 distinct roots
                 rootsCount = 2;
                 do {
-                    r1 = Math.floor(Math.random() * 11) - 5; // -5 to 5
+                    r1 = Math.floor(Math.random() * 11) - 5; 
                     r2 = Math.floor(Math.random() * 11) - 5;
                 } while (r1 === r2);
                 if (r1 > r2) { let temp = r1; r1 = r2; r2 = temp; }
@@ -835,7 +792,6 @@
                 b = -a * (r1 + r2);
                 c = a * r1 * r2;
             } else {
-                // Mode 2: 0, 1, or 2 roots randomly
                 rootsCount = Math.floor(Math.random() * 3);
                 const a_choices = [-3, -2, -1, 1, 2, 3];
                 a = a_choices[Math.floor(Math.random() * a_choices.length)];
@@ -849,11 +805,10 @@
                     b = -a * (r1 + r2);
                     c = a * r1 * r2;
                 } else if (rootsCount === 1) {
-                    r1 = Math.floor(Math.random() * 9) - 4; // -4 to 4 to keep intercepts visible
+                    r1 = Math.floor(Math.random() * 9) - 4; 
                     b = -2 * a * r1;
                     c = a * r1 * r1;
                 } else {
-                    // 0 roots: need b^2 - 4ac < 0
                     b = Math.floor(Math.random() * 9) - 4;
                     if (a > 0) {
                         c = Math.floor((b * b) / (4 * a)) + Math.floor(Math.random() * 4) + 1;
@@ -863,20 +818,23 @@
                 }
             }
             
-            document.getElementById('quiz-eq').textContent = formatQuizEqText(a, b, c, sign);
+            const eqStr = getLatexEq(a, b, c) + ' ' + getLatexSign(sign) + ' 0';
+            const quizEqBox = document.getElementById('quiz-eq');
+            quizEqBox.textContent = '\\(' + eqStr + '\\)';
+            renderMath(quizEqBox);
             
             let optionsData = generateOptions(a, b, c, sign, rootsCount, r1, r2);
             quiz.q = { a, b, c, sign, options: optionsData.options, correctIndex: optionsData.correctIndex };
             
-            // Build option buttons
             const optsContainer = document.getElementById('quiz-options');
             optsContainer.innerHTML = '';
             quiz.q.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = "w-full text-left px-4 py-3 rounded-lg border-2 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 font-medium text-slate-700 transition-colors";
-                btn.innerHTML = `<span class="math-text">${opt}</span>`;
+                btn.className = "w-full text-center px-4 py-3 rounded-lg border-2 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 font-medium text-slate-700 transition-colors text-lg";
+                btn.textContent = '\\(' + opt + '\\)';
                 btn.onclick = () => handleQuizAnswer(idx);
                 optsContainer.appendChild(btn);
+                renderMath(btn);
             });
         }
         
@@ -884,16 +842,15 @@
             let options = [];
             let correctIndex = -1;
             const strict = (sign === '>' || sign === '<');
-            const eqStr = strict ? ['<', '>'] : ['≤', '≥'];
+            const eqStr = strict ? ['\\lt', '\\gt'] : ['\\le', '\\ge'];
             
-            function formatOuter(rA, rB) { return `x ${eqStr[0]} ${rA}  or  x ${eqStr[1]} ${rB}`; }
+            function formatOuter(rA, rB) { return `x ${eqStr[0]} ${rA} \\text{ or } x ${eqStr[1]} ${rB}`; }
             function formatInner(rA, rB) { return `${rA} ${eqStr[0]} x ${eqStr[0]} ${rB}`; }
             
             if (rootsCount === 2) {
                 let opOuter = formatOuter(r1, r2);
                 let opInner = formatInner(r1, r2);
                 
-                // Mathematically check the midpoint to determine the correct region
                 let mid = (r1 + r2) / 2;
                 let midY = a*mid*mid + b*mid + c;
                 let midCorrect = checkIneqDirect(midY, sign);
@@ -902,14 +859,14 @@
                 correctIndex = midCorrect ? 1 : 0;
                 
                 if (quiz.mode === 2) {
-                    options.push("All real numbers");
-                    options.push("No solution");
+                    options.push("\\text{All real numbers}");
+                    options.push("\\text{No solution}");
                 }
             } else if (rootsCount === 1) {
                 let r = r1;
-                let opAllExcept = `All real numbers except x = ${r}`;
-                let opAll = `All real numbers`;
-                let opNone = `No solution`;
+                let opAllExcept = `\\text{All real numbers except } x = ${r}`;
+                let opAll = `\\text{All real numbers}`;
+                let opNone = `\\text{No solution}`;
                 let opEq = `x = ${r}`;
                 
                 options = [opAllExcept, opAll, opNone, opEq];
@@ -926,8 +883,8 @@
                      else if (sign === '>=') correctIndex = 3;
                 }
             } else {
-                let opAll = `All real numbers`;
-                let opNone = `No solution`;
+                let opAll = `\\text{All real numbers}`;
+                let opNone = `\\text{No solution}`;
                 options = [opAll, opNone];
                 let isAbove = a > 0;
                 if (isAbove) {
@@ -939,7 +896,6 @@
                 }
             }
             
-            // Randomize options list order
             let shuffled = options.map((opt, i) => ({opt, i})).sort(() => Math.random() - 0.5);
             let finalOptions = shuffled.map(x => x.opt);
             let finalCorrect = shuffled.findIndex(x => x.i === correctIndex);
@@ -958,7 +914,6 @@
             
             let maxAbsY = Math.max(Math.abs(yv), Math.abs(state.c), 5);
             
-            // Add padding so vertex is not at the exact edge
             maxAbsX += 2;
             maxAbsY += Math.max(2, maxAbsY * 0.15); 
             
@@ -966,8 +921,6 @@
             const scaleY = (els.canvas.height / 2) / maxAbsY;
             
             scale = Math.min(scaleX, scaleY);
-            
-            // Don't let it zoom in too much beyond standard scale
             scale = Math.min(scale, 40);
         }
 
@@ -977,17 +930,15 @@
             if (isCorrect) quiz.score++;
             
             updateScoreDisplay();
-            saveScoreToSheet(); // Sync the updated score to Google Sheets
+            saveScoreToSheet(); 
             
             quiz.waitingForAnswer = false;
             
-            // Configure the main graph to instantly visualize the question
             state.a = quiz.q.a;
             state.b = quiz.q.b;
             state.c = quiz.q.c;
             state.sign = quiz.q.sign;
             
-            // Expand slider ranges gracefully if random values exceed standard bounds
             document.getElementById('slider-a').min = Math.min(-5, state.a);
             document.getElementById('slider-a').max = Math.max(5, state.a);
             document.getElementById('slider-b').min = Math.min(-10, state.b);
@@ -1007,10 +958,8 @@
             adjustScaleForQuiz();
             render(); 
             
-            // Update overlay UI to reveal result - Do not hide the question container!
             document.getElementById('quiz-result-container').classList.remove('hidden');
             
-            // Highlight the selected options and disable buttons
             const optsContainer = document.getElementById('quiz-options');
             const buttons = Array.from(optsContainer.children);
             buttons.forEach((btn, i) => {
@@ -1018,13 +967,10 @@
                 btn.classList.remove('hover:border-indigo-400', 'hover:bg-indigo-50', 'border-slate-200');
                 
                 if (i === quiz.q.correctIndex) {
-                    // Correct answer highlighted in emerald
                     btn.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-800');
                 } else if (i === idx) {
-                    // User's incorrect choice highlighted in red
                     btn.classList.add('border-red-500', 'bg-red-50', 'text-red-800');
                 } else {
-                    // Other options dimmed
                     btn.classList.add('border-slate-200', 'opacity-50', 'cursor-not-allowed');
                 }
             });
@@ -1045,7 +991,6 @@
             } else {
                 fbTitle.textContent = "Incorrect";
                 fbTitle.className = "text-2xl font-bold mb-2 text-red-600";
-                // Simplified feedback since the options above are now highlighted
                 fbText.innerHTML = `Review the visual proof on the graph to see why.`;
             }
         }
@@ -1060,7 +1005,6 @@
                 total: quiz.total
             };
 
-            // Using text/plain avoids the CORS preflight (OPTIONS) request which Apps Script blocks
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: {
